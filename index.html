@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ECG Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+    <h1>ECG Data Visualization</h1>
+
+    <div>
+        <label for="idNumber">Enter ID number:</label>
+        <input type="number" id="idNumber" name="idNumber">
+        <button onclick="fetchData()">Get Data</button>
+    </div>
+
+    <p id="diseaseResult"></p>
+    <p id="mainClass"></p>
+
+    <div id="I" style="width:100%;"></div>
+    <div id="II" style="width:100%;"></div>
+    <div id="AVL" style="width:100%;"></div>
+    <div id="AVR" style="width:100%;"></div>
+    <div id="V5" style="width:100%;"></div>
+    <div id="V6" style="width:100%;"></div>
+
+    <!-- Image element to display disease image -->
+    <img id="diseaseImage" style="width:100%;" alt="Disease Image">
+
+    <script>
+        function fetchData() {
+            var number = document.getElementById("idNumber").value;
+            var apiURL = "https://api.allorigins.win/raw?url=https://ahmadammar.pythonanywhere.com/id/" + number;
+
+            fetch(apiURL)
+                .then(response => response.json())
+                .then(data => {
+                    // Extract the data
+                    var I = data['I'];
+                    var II = data['II'];
+                    var AVL = data['AVL'];
+                    var AVR = data['AVR'];
+                    var V5 = data['V5'];
+                    var V6 = data['V6'];
+                    var dis = data['dis'];
+                    var main = data['main'];
+
+                    // Display disease result
+                    document.getElementById("diseaseResult").innerText = "Disease Result: " + dis;
+
+                    // Display main class
+                    document.getElementById("mainClass").innerText = "Main Class: " + main;
+
+                    // Update the image source based on the disease name
+                    document.getElementById("diseaseImage").src = "ecgimg/" + dis + ".png";
+
+                    // Plot the graphs
+                    plotGraph('I', I, 'I Lead');
+                    plotGraph('II', II, 'II Lead');
+                    plotGraph('AVL', AVL, 'AVL Lead');
+                    plotGraph('AVR', AVR, 'AVR Lead');
+                    plotGraph('V5', V5, 'V5 Lead');
+                    plotGraph('V6', V6, 'V6 Lead');
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function plotGraph(elementId, yData, title) {
+            var data = [{
+                y: yData,
+                type: 'scatter'
+            }];
+
+            var layout = {
+                title: title,
+                width: window.innerWidth,
+                height: 400
+            };
+
+            Plotly.newPlot(elementId, data, layout);
+        }
+    </script>
+
+</body>
+</html>
