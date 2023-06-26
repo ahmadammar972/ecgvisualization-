@@ -7,12 +7,17 @@
 </head>
 <body>
 
-    <h1>ECG Data Visualization</h1>
+    <h1>Welcome to ECG Data Visualization</h1>
+    <img id="defaultImage" src="1605644020966.gif" style="width:100%;" alt="Welcome Image">
 
     <div>
         <label for="idNumber">Enter ID number:</label>
         <input type="number" id="idNumber" name="idNumber">
         <button onclick="fetchData()">Get Data</button>
+    </div>
+
+    <div>
+        <button onclick="toggleRealTime()">Real Time</button>
     </div>
 
     <p id="diseaseResult"></p>
@@ -25,12 +30,13 @@
     <div id="V5" style="width:100%;"></div>
     <div id="V6" style="width:100%;"></div>
 
-    <!-- Image element to display disease image -->
     <img id="diseaseImage" style="width:100%;" alt="Disease Image">
 
     <script>
-        function fetchData() {
-            var number = document.getElementById("idNumber").value;
+        let realTimeInterval;
+
+        function fetchData(id) {
+            var number = id || document.getElementById("idNumber").value;
             var apiURL = "https://api.allorigins.win/raw?url=https://ahmadammar.pythonanywhere.com/id/" + number;
 
             fetch(apiURL)
@@ -79,6 +85,18 @@
             };
 
             Plotly.newPlot(elementId, data, layout);
+        }
+
+        function toggleRealTime() {
+            if (realTimeInterval) {
+                clearInterval(realTimeInterval);
+                realTimeInterval = null;
+            } else {
+                realTimeInterval = setInterval(() => {
+                    const randomId = Math.floor(Math.random() * 350) + 1;
+                    fetchData(randomId);
+                }, 30000);
+            }
         }
     </script>
 
